@@ -1,0 +1,21 @@
+<?php
+
+function connectmcdr() {
+	$dbname = "mcdr";	$user = "ter1";	$password = "reliability";	$host = "192.168.40.101";	$dbconnection=mysql_connect($host,$user,$password) or die("Gagal melakukan koneksi ke database");	mysql_select_db($dbname);	return $dbconnection;
+}
+function connect() {
+	$dbname = "Imesys";	$user = "usr-ime";	$password = "p@ssw0rd";	$host = "192.168.240.104";	$dbconnection=mssql_connect($host,$user,$password) or die("Gagal melakukan koneksi ke database");	mssql_select_db($dbname);	return $dbconnection;
+}
+$conn_aircraftflightlog = connectmcdr();$qrybaru = "SELECT Max(`aircraftflightlog`.`id_aircraftlog`) AS `Max` FROM `aircraftflightlog`";$hasilid = mysql_query($qrybaru);
+while ($hasillagi = mysql_fetch_array($hasilid)){	$hasilbaru = $hasillagi["Max"];}
+mysql_free_result($hasilid);$connImesys_newData = connect();$query = "SELECT * FROM `aircraftflightlog` WHERE (`aircraftflightlog`.`id_aircraftLog` > '$hasilbaru')";$result = mssql_query($query) or die("No New Data");
+
+if (mssql_num_rows($result) == 0){	die("No New Data");
+}
+mssql_close($conn_aircraftflightlog);
+while ($hasilFH = mssql_fetch_array($result)){		$sap[$hasilFH["id_aircraftLog"]] = $hasilFH["SAP_MANDT"];	$sap_reg[$hasilFH["id_aircraftLog"]] = $hasilFH["SAP_REGISTRATION"];	$afnum[$hasilFH["id_aircraftLog"]] = $hasilFH["aflNumber"];	$acregis[$hasilFH["id_aircraftLog"]] = $hasilFH["acReg"];	$fltnum[$hasilFH["id_aircraftLog"]] = $hasilFH["fltNumber"];	$carier_id[$hasilFH["id_aircraftLog"]] = $hasilFH["carierID"];	$carier_name[$hasilFH["id_aircraftLog"]] = $hasilFH["carierName"];	$dep[$hasilFH["id_aircraftLog"]] = $hasilFH["staDep"];	$arr[$hasilFH["id_aircraftLog"]] = $hasilFH["staArr"];	$blockon_date[$hasilFH["id_aircraftLog"]] = $hasilFH["blockOnDate"];	$blockon_time[$hasilFH["id_aircraftLog"]] = $hasilFH["blockOnTime"];	$blockoff_date[$hasilFH["id_aircraftLog"]] = $hasilFH["blockOffDate"];	$blockoff_time[$hasilFH["id_aircraftLog"]] = $hasilFH["blockOffTime"];	$airborne_date[$hasilFH["id_aircraftLog"]] = $hasilFH["airborneDate"];	$airborne_time[$hasilFH["id_aircraftLog"]] = $hasilFH["airbornetime"];	$touchdown_date[$hasilFH["id_aircraftLog"]] = $hasilFH["touchDownDate"];	$touchdown_time[$hasilFH["id_aircraftLog"]] = $hasilFH["touchDownTime"];	$air_time[$hasilFH["id_aircraftLog"]] = $hasilFH["airTime"];	$flight_time[$hasilFH["id_aircraftLog"]] = $hasilFH["flightTime"];	$insert[$hasilFH["id_aircraftLog"]] = $hasilFH["insertBy"];	$sap_status[$hasilFH["id_aircraftLog"]] = $hasilFH["sapStatus"];	$void_status[$hasilFH["id_aircraftLog"]] = $hasilFH["voidStatus"];	$rev[$hasilFH["id_aircraftLog"]] = $hasilFH["revenue"];	$ldg[$hasilFH["id_aircraftLog"]] = $hasilFH["landing"];	$ldg_tyoe[$hasilFH["id_aircraftLog"]] = $hasilFH["landingType"];	$efmp_i[$hasilFH["id_aircraftLog"]] = $hasilFH["efmp"];	$currdate[$hasilFH["id_aircraftLog"]] = $hasilFH["currentDate"];	$id_log[$hasilFH["id_aircraftLog"]] = $hasilFH["id_aircraftLog"];		$conn_insert = connectmcdr();	$qry = "INSERT INTO `aircraftflightlog` (`SAP_MANDT`, `SAP_REGISTRATION`, `aflNumber`, `acReg`, `fltNumber`, `carierID`, `carierName`, `staDep`, `staArr`, `blockOnDate`, `blockOnTime`, `blockOffDate`, `blockOffTime`, `airborneDate`, `airbornetime`, `touchDownDate`, `touchDownTime`, `airTime`, `flightTime`, `insertBy`, `sapStatus`, `voidStatus`, `revenue`, `landing`, `landingType`, `efmp`, `currentDate`, id_aircraftLog) VALUES ('".$sap."','".$sap_reg."','".$afnum."','".$acregis."','".$fltnum."','".$carier_id."','".$carier_name."','".$dep."','".$arr."','".$blockon_date."','".$blockon_time."','".$blockoff_date."','".$blockoff_time."','".$airborne_date."','".$airborne_time."','".$touchdown_date."','".$touchdown_time."','".$air_time."','".$flight_time."','".$insert."','".$sap_status."','".$void_status."','".$rev."','".$ldg."','".$ldg_tyoe."','".$efmp_i."','".$currdate."','$id_log')";
+}
+print_r($qry);$resultqry = mysql_query($qry, $conn_insert);
+
+mssql_free_result($result);
+?>
